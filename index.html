@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>헬로키티의 달콤한 주방 🎀 | Hello Kitty's Sweet Kitchen</title>
+  <meta name="description" content="헬로키티와 산리오 캐릭터들이 함께하는 귀엽고 아기자기한 2D 요리 게임! 60초 안에 3명의 손님에게 맛있는 요리를 서빙해보세요!">
+  
+  <!-- 구글 웹 폰트 (동글 & 주아: 귀여운 산리오 감성 서체) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&family=Jua&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 최상위 게임 컨테이너 -->
+  <div id="game-app" class="game-container">
+
+    <!-- ================= 1. 시작 화면 ================= -->
+    <section id="start-screen" class="screen start-screen">
+      <div class="decorations-layer">
+        <span class="floating-deco deco-ribbon-1">🎀</span>
+        <span class="floating-deco deco-heart-1">💖</span>
+        <span class="floating-deco deco-star-1">⭐</span>
+        <span class="floating-deco deco-strawberry-1">🍓</span>
+        <span class="floating-deco deco-flower-1">🌸</span>
+        <span class="floating-deco deco-heart-2">💕</span>
+        <span class="floating-deco deco-ribbon-2">🎀</span>
+      </div>
+
+      <div class="start-card">
+        <div class="title-ribbon">
+          <span class="ribbon-icon">🎀</span>
+          <h1 class="game-title">헬로키티의 달콤한 주방</h1>
+          <span class="ribbon-icon">🎀</span>
+        </div>
+        <p class="game-subtitle">산리오 친구들을 위한 특별한 요리 시간 ✨</p>
+
+        <div class="start-chef-showcase">
+          <div class="showcase-glow"></div>
+          <img src="public/images/characters/hello_kitty_chef.png" alt="헬로키티 셰프" class="start-kitty-img" onerror="this.src='public/images/characters/hello_kitty_chef.png'">
+        </div>
+
+        <div class="start-button-group">
+          <button id="btn-start-game" class="btn btn-start-game" aria-label="게임 시작">
+            <span class="btn-text">💖 게임 시작하기 💖</span>
+            <span class="btn-glow"></span>
+          </button>
+          <button id="btn-how-to-play" class="btn btn-secondary" aria-label="게임 방법 안내">
+            📖 게임 방법 안내
+          </button>
+        </div>
+
+        <div class="recipe-preview-box">
+          <span class="preview-title">🍰 오늘의 달콤 메뉴 (총 8가지 요리 중 랜덤 주문!)</span>
+          <div id="preview-dishes-container" class="preview-dishes">
+            <!-- 8종 요리 동적 렌더링 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 2. 게임 방법 모달 ================= -->
+    <div id="modal-how-to-play" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>🎀 게임 방법 & 규칙 안내 🎀</h2>
+          <button id="btn-close-modal" class="btn-close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="rule-card">
+            <h3>⏰ 1. 제한 시간 60초 & 손님 3명 (랜덤 방문)</h3>
+            <p>총 <strong>60초</strong> 동안 산리오 친구들 중 <strong>3명의 손님이 무작위로 방문</strong>해 각기 다른 요리를 랜덤으로 주문해요!</p>
+          </div>
+          <div class="rule-card">
+            <h3>🍳 2. 8가지 다채로운 요리 레시피</h3>
+            <p>게임 중 언제든지 상단의 <strong>[📖 레시피북]</strong> 버튼을 눌러 전체 8가지 요리의 재료 조합과 조리 시간을 확인할 수 있어요!</p>
+            <p class="penalty-hint">⚠️ 손님이 주문한 요리와 재료 조합이 틀리면 <strong>-20점 감점</strong>되니 주의하세요!</p>
+          </div>
+          <div class="rule-card">
+            <h3>🔥 3. 요리 태우기 주의 (5초 골든타임)</h3>
+            <p>조리가 끝난 후 <strong>5초 이내에 서빙</strong>하지 않으면 요리가 새까맣게 타버려요! 탄 요리는 <strong>-30점 감점</strong>되며 서빙할 수 없어요.</p>
+          </div>
+          <div class="rule-card">
+            <h3>⭐ 4. 높은 점수 팁!</h3>
+            <p>올바른 서빙 <strong>+100점</strong>, 빠른 서빙 보너스 최대 <strong>+50점</strong>, 완벽 조리 <strong>+50점</strong>까지 획득할 수 있습니다!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2-1. 전체 레시피북 모달 ================= -->
+    <div id="modal-recipe-book" class="modal-overlay hidden">
+      <div class="modal-content modal-recipe-book-content">
+        <div class="modal-header">
+          <h2>📖 헬로키티의 비밀 레시피북 🍓</h2>
+          <button id="btn-close-recipe-book" class="btn-close">×</button>
+        </div>
+        <div id="recipe-book-list" class="recipe-book-list">
+          <!-- 8종 레시피 카드 동적 렌더링 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 3. 메인 게임 플레이 화면 ================= -->
+    <main id="game-screen" class="screen game-screen hidden">
+      <!-- 상단 HUD 영역 -->
+      <header class="game-hud">
+        <div class="hud-box timer-box">
+          <div class="timer-ribbon-badge">
+            <span class="ribbon-symbol">🎀</span>
+            <span id="timer-text" class="timer-number timer-pink">00:60</span>
+            <span class="ribbon-symbol">🎀</span>
+          </div>
+          <div class="timer-gauge-container">
+            <div id="timer-gauge-fill" class="timer-gauge-fill bar-pink" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="hud-center-stats">
+          <div class="stat-badge customer-badge">
+            <span class="stat-icon">🐾</span>
+            <span id="customer-progress-badge">손님 1 / 3</span>
+          </div>
+          <div class="stat-badge score-badge">
+            <span class="stat-icon">⭐</span>
+            <span id="score-text">0점</span>
+          </div>
+        </div>
+
+        <div class="hud-controls">
+          <button id="btn-recipe-book" class="btn-hud-icon" aria-label="레시피북 열기" title="레시피북 보기">📖</button>
+          <button id="btn-sound-toggle" class="btn-sound" aria-label="사운드 켜기/끄기">🔊</button>
+        </div>
+      </header>
+
+      <!-- 중앙 무대 영역 (손님 + 헬로키티 셰프 + 조리대) -->
+      <section class="game-stage">
+        <!-- 손님 영역 -->
+        <div class="stage-guest-area">
+          <div class="guest-card">
+            <div id="guest-avatar" class="guest-avatar">
+              <!-- 손님 이미지 또는 SVG 자동 주입 -->
+            </div>
+            <div id="guest-name" class="guest-name-tag">손님</div>
+          </div>
+
+          <div id="guest-speech-bubble" class="speech-bubble">
+            <div class="speech-quote">맛있는 요리를 부탁해! 💕</div>
+          </div>
+        </div>
+
+        <!-- 헬로키티 셰프 & 조리대 영역 -->
+        <div class="stage-kitchen-area">
+          <div class="chef-side">
+            <div id="chef-avatar" class="chef-avatar">
+              <!-- 헬로키티 셰프 이미지 -->
+            </div>
+            <div id="chef-action-label" class="chef-status-bubble">주문 대기 중... 🎀</div>
+          </div>
+
+          <div class="stove-side">
+            <div id="stove-display" class="stove-display">
+              <div id="stove-dish-image" class="stove-dish-container">
+                <div class="empty-pan">
+                  <span class="pan-emoji">🍳</span>
+                  <span class="pan-tip">조리대가 비어있어요</span>
+                </div>
+              </div>
+
+              <div id="stove-status-text" class="stove-status-text">
+                재료를 선택한 후 조리 시작을 눌러주세요.
+              </div>
+
+              <!-- 조리 진행 게이지 (조리 중에만 노출) -->
+              <div id="cook-progress-container" class="progress-wrap hidden">
+                <div class="progress-bar-bg">
+                  <div id="cook-progress-bar" class="progress-bar-fill cook-fill" style="width: 0%;"></div>
+                </div>
+                <div id="cook-progress-label" class="progress-label">남은 조리 시간: 0.0초</div>
+              </div>
+
+              <!-- 5초 요리 태우기 경고 게이지 (완성 후 노출) -->
+              <div id="burn-progress-container" class="progress-wrap burn-wrap hidden">
+                <div class="progress-bar-bg">
+                  <div id="burn-progress-bar" class="progress-bar-fill burn-fill" style="width: 100%;"></div>
+                </div>
+                <div id="burn-progress-label" class="progress-label burn-label">🔥 5.0초 후 요리가 타버려요!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 하단 조작 영역 (재료 선택 + 조리/서빙 버튼) -->
+      <footer class="game-controls-panel">
+        <!-- 선택된 재료 트레이 -->
+        <div class="selected-ingredients-section">
+          <div class="tray-header">
+            <span class="tray-title">🥣 조리대 위의 재료:</span>
+            <button id="btn-reset-ingredients" class="btn-reset" disabled>🔄 재료 비우기</button>
+          </div>
+          <div id="selected-tray" class="selected-tray">
+            <span class="empty-tray-tip">재료를 클릭하여 올려놓으세요 ✨</span>
+          </div>
+        </div>
+
+        <!-- 6개 재료 선택 버튼 그리드 -->
+        <div id="ingredients-grid" class="ingredients-grid">
+          <!-- 면, 계란, 물, 기름, 빵, 치즈 동적 렌더링 -->
+        </div>
+
+        <!-- 메인 액션 버튼 (조리 시작 / 서빙하기 / 다시 요리하기) -->
+        <div class="action-buttons-container">
+          <button id="btn-cook" class="btn btn-action btn-cook" disabled>
+            🎀 조리 시작
+          </button>
+          <button id="btn-serve" class="btn btn-action btn-serve hidden">
+            ✨ 손님에게 서빙하기 ✨
+          </button>
+          <button id="btn-cook-again" class="btn btn-action btn-retry hidden">
+            💨 탄 요리 치우고 다시 만들기
+          </button>
+        </div>
+      </footer>
+    </main>
+
+    <!-- ================= 4. 결과 화면 (클리어 / 타임아웃) ================= -->
+    <section id="result-screen" class="screen result-screen hidden">
+      <div class="result-card">
+        <h2 id="result-title" class="result-title">🎉 완벽 클리어! 🎀</h2>
+        <p id="result-subtext" class="result-subtext">산리오 친구들이 모두 행복해졌어요!</p>
+
+        <!-- 별점 -->
+        <div id="result-stars" class="result-stars">
+          <span class="star-icon active">⭐</span>
+          <span class="star-icon active">⭐</span>
+          <span class="star-icon active">⭐</span>
+        </div>
+
+        <!-- 점수 및 결과 통계 박스 -->
+        <div class="result-stats-board">
+          <div class="result-stat-item">
+            <span class="res-stat-label">최종 점수</span>
+            <span id="result-final-score" class="res-stat-val highlight">0점</span>
+          </div>
+          <div class="result-stat-item">
+            <span class="res-stat-label">만족시킨 손님</span>
+            <span id="result-orders-count" class="res-stat-val">3 / 3</span>
+          </div>
+        </div>
+
+        <!-- 산리오 친구들 축하 일러스트 무대 -->
+        <div id="result-celebration" class="result-celebration">
+          <!-- 축하 캐릭터들 동적 주입 -->
+        </div>
+
+        <button id="btn-restart-game" class="btn btn-start-game btn-restart">
+          🔄 다시 플레이하기 💖
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 메인 게임 통합 스크립트 (로컬 file:// 및 웹 서버 모두 완벽 호환) -->
+  <script src="js/game.bundle.js"></script>
+</body>
+</html>
